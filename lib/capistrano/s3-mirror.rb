@@ -1,4 +1,9 @@
-require "aws/s3"
+begin
+  require "aws/s3"
+rescue LoadError
+  puts "aws-s3 gem needs to be installed"
+  puts "install via 'gem i aws-s3'"
+end
 
 unless Capistrano::Configuration.respond_to?(:instance)
   abort "capistrano/ext/multistage requires Capistrano 2"
