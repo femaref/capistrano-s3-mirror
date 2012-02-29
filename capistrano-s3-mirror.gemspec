@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "capistrano-s3-mirror.gemspec",
-    "lib/s3-mirror/s3-mirror.rb"
+    "lib/capistrano/s3-mirror.rb"
   ]
   s.homepage = "http://github.com/Femaref/capistrano-s3-mirror"
   s.licenses = ["MIT"]

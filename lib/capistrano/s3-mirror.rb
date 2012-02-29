@@ -1,35 +1,41 @@
 require "aws/s3"
 
-namespace :deploy do
-  desc "mirrors the content of the public folder to amazon s3"
-  task :s3_mirror do
-  
-    if !exists? :s3_access_key_id
-      set(:s3_access_key_id) do
-        Capistrano::CLI.ui.ask("Enter s3_access_key_id: ")
+unless Capistrano::Configuration.respond_to?(:instance)
+  abort "capistrano/ext/multistage requires Capistrano 2"
+end
+
+Capistrano::Configuration.instance.load do
+  namespace :deploy do
+    desc "mirrors the content of the public folder to amazon s3"
+    task :s3_mirror do
+    
+      if !exists? :s3_access_key_id
+        set(:s3_access_key_id) do
+          Capistrano::CLI.ui.ask("Enter s3_access_key_id: ")
+        end
       end
-    end
-    
-    if !exists? :s3_secret_access_key
-      set(:s3_secret_access_key) do
-        Capistrano::CLI.password_prompt("Enter s3_secret_access_key: ")
+      
+      if !exists? :s3_secret_access_key
+        set(:s3_secret_access_key) do
+          Capistrano::CLI.password_prompt("Enter s3_secret_access_key: ")
+        end
       end
-    end
-    
-    if !exists? :s3_bucket_name
-      set(:s3_bucket_name) do
-        Capistrano::CLI.ui.ask("Enter s3_bucket_name: ")
+      
+      if !exists? :s3_bucket_name
+        set(:s3_bucket_name) do
+          Capistrano::CLI.ui.ask("Enter s3_bucket_name: ")
+        end
       end
-    end
-    
-    if !exists? :s3_base_path
-      set(:s3_base_path) do
-        Capistrano::CLI.ui.ask("Enter s3_base_path: ")
+      
+      if !exists? :s3_base_path
+        set(:s3_base_path) do
+          Capistrano::CLI.ui.ask("Enter s3_base_path: ")
+        end
       end
+      
+      sync s3_access_key_id, s3_secret_access_key, s3_bucket_name, s3_base_path
+      
     end
-    
-    sync s3_access_key_id, s3_secret_access_key, s3_bucket_name, s3_base_path
-    
   end
 end
 
