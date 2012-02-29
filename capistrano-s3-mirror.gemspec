@@ -19,10 +19,13 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
     "Gemfile",
+    "Gemfile.lock",
     "LICENSE.txt",
     "README.rdoc",
     "Rakefile",
-    "VERSION"
+    "VERSION",
+    "capistrano-s3-mirror.gemspec",
+    "lib/s3_mirror.rb"
   ]
   s.homepage = "http://github.com/Femaref/capistrano-s3-mirror"
   s.licenses = ["MIT"]
