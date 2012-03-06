@@ -2,7 +2,8 @@ begin
   require "aws/s3"
 rescue LoadError
   puts "aws-s3 gem needs to be installed"
-  puts "install via 'gem i aws-s3'"
+  puts "install via 'gem install aws-s3'"
+  exit 1
 end
 
 unless Capistrano::Configuration.respond_to?(:instance)
@@ -38,15 +39,21 @@ Capistrano::Configuration.instance.load do
         end
       end
       
-      sync s3_access_key_id, s3_secret_access_key, s3_bucket_name, s3_base_path
+      if !exists? :s3_region_endpoint
+        set(:s3_region_endpoint) do
+          Capistrano::CLI.ui.ask("Enter s3_region_endpoint: ")
+        end
+      end
+      
+      sync s3_access_key_id, s3_secret_access_key, s3_bucket_name, s3_base_path, s3_region_endpoint
       
     end
   end
 end
 
-def sync (key_id, secret_access_key, bucket_name, base_path)
+def sync (key_id, secret_access_key, bucket_name, base_path, s3_region_endpoint)
   # TODO: make changeable
-  AWS::S3::DEFAULT_HOST.replace("s3-eu-west-1.amazonaws.com")
+  AWS::S3::DEFAULT_HOST.replace(s3_region_endpoint)
   AWS::S3::Base.establish_connection!(:access_key_id => key_id, :secret_access_key => secret_access_key)
   
   bucket = AWS::S3::Bucket.find(bucket_name)
