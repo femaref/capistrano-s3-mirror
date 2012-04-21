@@ -52,7 +52,6 @@ Capistrano::Configuration.instance.load do
 end
 
 def sync (key_id, secret_access_key, bucket_name, base_path, s3_region_endpoint)
-  # TODO: make changeable
   AWS::S3::DEFAULT_HOST.replace(s3_region_endpoint)
   AWS::S3::Base.establish_connection!(:access_key_id => key_id, :secret_access_key => secret_access_key)
   
