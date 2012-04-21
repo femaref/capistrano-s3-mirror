@@ -1,6 +1,14 @@
-= capistrano-s3-mirror
+== capistrano-s3-mirror
 
 Mirrors the content of the public directory to a specified s3 bucket/folder.
+
+== Usage
+
+    gem install capistrano-s3-mirror # or add in Gemfile
+
+require in `config/deploy.rb`:
+
+    require 'capistrano/s3-mirror'
 
 == Contributing to capistrano-s3-mirror
  
