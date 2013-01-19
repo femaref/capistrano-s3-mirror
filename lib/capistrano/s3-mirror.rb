@@ -45,13 +45,27 @@ Capistrano::Configuration.instance.load do
         end
       end
       
-      sync s3_access_key_id, s3_secret_access_key, s3_bucket_name, s3_base_path, s3_region_endpoint
+      if !exists? :s3_local_path
+        set(:s3_local_path) do
+          Capistrano::CLI.ui.ask("Enter s3_local_path: [public] ")
+        end
+      end
+      
+      sync s3_access_key_id, s3_secret_access_key, s3_bucket_name, s3_base_path, s3_region_endpoint, s3_local_path
       
     end
   end
 end
 
-def sync (key_id, secret_access_key, bucket_name, base_path, s3_region_endpoint)
+def sync (key_id, secret_access_key, bucket_name, base_path, s3_region_endpoint, s3_local_path)
+
+  s3_local_path = "public" if s3_local_path.empty?
+
+  if !File.directory?(s3_local_path)
+    puts "Directory '#{s3_local_path}' is missing"
+    exit 1
+  end
+
   AWS::S3::DEFAULT_HOST.replace(s3_region_endpoint)
   AWS::S3::Base.establish_connection!(:access_key_id => key_id, :secret_access_key => secret_access_key)
   
@@ -68,7 +82,7 @@ def sync (key_id, secret_access_key, bucket_name, base_path, s3_region_endpoint)
   remote_data = remote_map(remote_data, context)
   remote = Hash[remote_data]
   
-  local_data = Dir.chdir("public") do
+  local_data = Dir.chdir(s3_local_path) do
     # map local files to path => md5(file)
     Dir["**/**"].select{ |d| !File.directory? d }.map { |path| [ path, Digest::MD5.file(path).hexdigest ] }
   end
@@ -82,7 +96,7 @@ def sync (key_id, secret_access_key, bucket_name, base_path, s3_region_endpoint)
   deleted_count = 0
   updated_count = 0
   
-  Dir.chdir("public") do
+  Dir.chdir(s3_local_path) do
     new.each do |entry|
       AWS::S3::S3Object.store(entry, open(entry), bucket_name, :access => :public_read)
       uploaded_count += 1
