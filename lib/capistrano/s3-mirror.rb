@@ -17,13 +17,15 @@ Capistrano::Configuration.instance.load do
     
       if !exists? :s3_access_key_id
         set(:s3_access_key_id) do
-          Capistrano::CLI.ui.ask("Enter s3_access_key_id: ")
+          ENV['AWS_ACCESS_KEY_ID'] || 
+            Capistrano::CLI.ui.ask("Enter s3_access_key_id: ")
         end
       end
       
       if !exists? :s3_secret_access_key
         set(:s3_secret_access_key) do
-          Capistrano::CLI.password_prompt("Enter s3_secret_access_key: ")
+          ENV['AWS_SECRET_ACCESS_KEY'] ||
+            Capistrano::CLI.password_prompt("Enter s3_secret_access_key: ")
         end
       end
       
